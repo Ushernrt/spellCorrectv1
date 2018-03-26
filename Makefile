@@ -1,13 +1,18 @@
-TARGETPATH:=./Bin
-TARGET:=./Bin/offline.exe
-SRCOFFLINE:=./srcOffline/*.cc
+SOURCES:=$(wildcard ./src/*.cc)
+OBJS:=$(patsubst %.cc, %.o, $(SOURCES))
+LIBS:= -lpthread
 
 CXX:=g++
 
-FLAGS:= -std=c++11
+CXXFLAGS:= -std=c++11
 
-$(TARGET) : $(SRCOFFLINE)
-	$(CXX) $^ -o $@ $(FLAGS)
+EXE:=./Bin/server.exe
+
+$(EXE) : $(OBJS)
+	$(CXX) -o $(EXE) $(OBJS) $(CXXFLAGS) $(LIBS)
 
 clean:
-	rm -rf TARGET 
+	rm -rf $(EXE)
+	rm -rf $(OBJS)
+
+
