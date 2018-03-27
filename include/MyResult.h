@@ -12,6 +12,7 @@
 namespace wd{
 
 struct MyResult{
+
 	std::string _word;
 	int _iFreq;
 	int _iDist;

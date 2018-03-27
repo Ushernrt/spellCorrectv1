@@ -4,74 +4,17 @@
  /// @date    2018-03-25 20:34:18
  ///
 
-#include "../include/TcpServer.h"
-#include "../include/Threadpool.h"
+#include "../include/SpellcorrectServer.h"
+#include "../include/Configuration.h"
 
 #include <iostream>
 using std::cout;
 using std::endl;
 
-class Task{
-public:
-	Task(const string & query, const wd::TcpConnectionPtr & conn)
-	: _query(query)
-	, _conn(conn)
-	{}
-	
-	void process(){
-		cout << "> task is processing" << endl;
 
-		_conn->sendInLoop(_query);
-	}
-
-private:
-	 string _query;
-	 wd::TcpConnectionPtr _conn;
-
-};
-
-wd::Threadpool * g_threadpool = NULL;
-
-void onConnection(const wd::TcpConnectionPtr & conn){
-	cout << conn->toString() << endl;
-	conn -> send("hello, welcome to Char Server.\r\n");
-}
-
-void onMessage(const wd::TcpConnectionPtr & conn){
-	std::string s(conn->receive());
-	
-	Task task(s, conn);
-	g_threadpool->addTask(std::bind(&Task::process, task));
-	cout << "> add task to threadpool" << endl;
-
-}
-
-void onClose(const wd::TcpConnectionPtr & conn){
-	printf("%s close\n", conn->toString().c_str());
-}
-
-int test(){
-	wd::Threadpool threadpool(4, 10);
-	g_threadpool = &threadpool;
-	threadpool.start();
-
-	wd::TcpServer tcpserver(8888);
-	tcpserver.setConnectionCallback(&onConnection);
-	tcpserver.setMessageCallback(&onMessage);
-	tcpserver.setCloseCallback(&onClose);
-
-	tcpserver.start();
-	
-
-	return 0;
-
-}
-
-#include "../include/SpellcorrectServer.h"
-#include "../include/Configuration.h"
 
 int main(){
-	wd::Configuration config("../conf/config")	;
+	wd::Configuration config("/home/xiu/spellCorrectv2/conf/config")	;
 
 	wd::SpellcorrectServer server(config);
 

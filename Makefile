@@ -8,7 +8,7 @@ CXX:=g++
 CXXFLAGS:= -std=c++11
 
 EXE:=./Bin/server.exe
-EXECLIENT:=./Bin/client.server
+EXECLIENT:=./Bin/client.exe
 
 $(EXE) : $(OBJS)
 	$(CXX) -o $(EXE) $(OBJS) $(CXXFLAGS) $(LIBS)

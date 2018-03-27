@@ -19,10 +19,13 @@ public:
 	SpellcorrectServer(Configuration & conf)
 	: _conf(conf)
 	, _tcpServer(8888)
+	, _threadpool(4, 10)
 	{
-		_tcpServer.setConnectionCallback(&(SpellcorrectServer::onConnection));
-		_tcpServer.setMessageCallback(SpellcorrectServer::onMessage);
-		_tcpServer.setCloseCallback(&onClose);
+		_dict = MyDict::createInstance();
+		_dict->init(_conf.getConfigMap()["dictPath"].c_str(),_conf.getConfigMap()["indexPath"].c_str());
+		_tcpServer.setConnectionCallback(std::bind(&SpellcorrectServer::onConnection,this,std::placeholders::_1));
+		_tcpServer.setMessageCallback(std::bind(&SpellcorrectServer::onMessage,this,std::placeholders::_1));
+		_tcpServer.setCloseCallback(std::bind(&SpellcorrectServer::onClose,this,std::placeholders::_1));
 	}
 
 	void start(){
@@ -30,32 +33,32 @@ public:
 		_tcpServer.start();
 	}
 
-	static void onConnection(const TcpConnectionPtr & conn){
+	void onConnection(const TcpConnectionPtr & conn){
 		cout << conn->toString() << endl;		
 		conn->send("hello , welcome to SpellcorrectServer.\r\n");
 	}
 
-	static void onMessage(const TcpConnectionPtr & conn){
+	void onMessage(const TcpConnectionPtr & conn){
 		std::string s(conn->receive());
 		
-		MyTask task(s, conn);
+		MyTask task(_dict, s, conn);
 
 		_threadpool.addTask(std::bind(&MyTask::process, task));
 		cout << "add task to threadpool" << endl;
 	}
 
-	static void onClose(const TcpConnectionPtr & conn){
+	void onClose(const TcpConnectionPtr & conn){
 		cout << conn->toString().c_str() << endl;
 	}
 	
 
 private:
+	MyDict * _dict;
 	Configuration & _conf;
 	TcpServer _tcpServer;
-	static Threadpool _threadpool;
+	Threadpool _threadpool;
 };
 
-Threadpool SpellcorrectServer::_threadpool(4,10);
 
 }//end of namespace wd
 #endif
