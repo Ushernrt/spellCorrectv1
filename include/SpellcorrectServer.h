@@ -1,5 +1,5 @@
  ///
- /// @file    SpellcorrectServer.cc
+ /// @file    SpellcorrectServer.h
  /// @author  xiu(1107040857@qq.com)
  /// @date    2018-03-26 21:55:01
  ///
@@ -19,7 +19,6 @@ public:
 	SpellcorrectServer(Configuration & conf)
 	: _conf(conf)
 	, _tcpServer(8888)
-	, _threadpool(4, 10)
 	{
 		_tcpServer.setConnectionCallback(&(SpellcorrectServer::onConnection));
 		_tcpServer.setMessageCallback(SpellcorrectServer::onMessage);
@@ -53,7 +52,10 @@ public:
 private:
 	Configuration & _conf;
 	TcpServer _tcpServer;
-	Threadpool _threadpool;
+	static Threadpool _threadpool;
 };
+
+Threadpool SpellcorrectServer::_threadpool(4,10);
+
 }//end of namespace wd
 #endif

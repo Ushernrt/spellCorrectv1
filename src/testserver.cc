@@ -50,7 +50,7 @@ void onClose(const wd::TcpConnectionPtr & conn){
 	printf("%s close\n", conn->toString().c_str());
 }
 
-int main(){
+int test(){
 	wd::Threadpool threadpool(4, 10);
 	g_threadpool = &threadpool;
 	threadpool.start();
@@ -65,4 +65,17 @@ int main(){
 
 	return 0;
 
+}
+
+#include "../include/SpellcorrectServer.h"
+#include "../include/Configuration.h"
+
+int main(){
+	wd::Configuration config("../conf/config")	;
+
+	wd::SpellcorrectServer server(config);
+
+	server.start();
+	
+	return 0;
 }

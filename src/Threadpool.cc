@@ -7,7 +7,7 @@
 #include "../include/Threadpool.h"
 #include "../include/Thread.h"
 #include <unistd.h>
-
+#include <iostream>
 namespace wd{
 
 Threadpool::Threadpool(size_t threadNum, size_t queSize)
@@ -64,6 +64,7 @@ void Threadpool::threadFunc(){
 		Task task = getTask();
 		if(task)
 			task();
+		std::cout << "task completed" << std::endl;
 	}
 
 }

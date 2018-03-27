@@ -4,7 +4,7 @@
  /// @date    2018-03-26 23:26:35
  ///
 
-#include "../include/SpellcorrectServer.cc"
+#include "../include/SpellcorrectServer.h"
 #include "../include/Configuration.h"
 
 #include <iostream>
@@ -19,5 +19,5 @@ int main(){
 
 	server.start();
 
-
+	return 0;
 }
