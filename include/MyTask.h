@@ -12,18 +12,21 @@
 #include "Mydict.h"
 
 #include <string.h>
+#include <ctype.h>
 
 #include <string>
 #include <queue>
 #include <vector>
 #include <set>
 #include <sstream>
+#include <bitset>
 
 using std::priority_queue;
 using std::vector;
 using std::string;
 using std::set;
 using std::ostringstream;
+using std::bitset;
 
 namespace wd{
 
@@ -54,7 +57,6 @@ public:
 		queryIndexTable();
 		
 		response();
-		// _conn->sendInLoop("not found");
 	}
 
 private:
@@ -68,10 +70,12 @@ private:
 	}
 
 	void queryIndexTable(){
-		size_t len = _queryWord.size();
+		size_t len = _queryWord.size() - 1;
+		_isUsed.reset(); 
 		if(len <= 0) return ;
 		for(size_t i = 0; i != len;++ i){
-			set<int> iset = _dict->getIndexTable()[chartostring(_queryWord[i])];
+			set<int> iset = _dict->getIndexTable()[chartostring(::tolower(_queryWord[i]))];
+						
 			statistic(iset);
 		}
 		cout << "query index table completed" << endl;
@@ -80,40 +84,79 @@ private:
 	//计算
 	void statistic(set<int> & iset){
 		MyResult res;
-		
+	
 		vector<pair<string, int>> dict = _dict->getDict();
 		for(auto & item : iset){
-			res._word = dict[item].first;
-			res._iFreq = dict[item].second;
-			res._iDist = miniDist(res._word, _queryWord);
+						
+			if(!_isUsed[item]){
 
-			_resultQue.push(res);
+				res._word = dict[item].first;
+				res._iFreq = dict[item].second;
+				res._iDist = miniDist(res._word, _queryWord);
+				//cout << res._word << endl;
+				_resultQue.push(res);
+				_isUsed[item] = 1;
+			}
 		}
+
+	}
+
+	int min(int x, int y){
+		return x > y ? y : x;
 	}
 
 	int miniDist(const string & v1, const string & v2){
+		int n = v1.length();
+		int m = v2.length();
 
+		vector<vector<int> > dp(n + 1);
 
-		return 0;		
+		for(int i = 0;i <= n;++ i){
+			dp[i].resize(m + 1);
+		}
+
+		dp[0][0] = 0;
+
+		for(int i = 1;i <= n;++ i){
+			dp[i][0] = i;
+		}
+		for(int j = 1;j <= m;++ j){
+			dp[0][j] = j;
+		}
+		 
+		for(int i = 1;i <= n;++ i){
+			for(int j = 1;j <= m;++ j){
+				dp[i][j] = min(dp[i-1][j]+1, dp[i][j-1]+1);
+				if(v1[i-1] == v2[j - 1])
+					dp[i][j] = min(dp[i-1][j-1], dp[i][j]);
+				else 
+					dp[i][j] = min(dp[i][j], dp[i-1][j-1]+1);
+			}
+		}
+
+		return dp[n][m];
 	}
 
 	int distance(const string & rhs){
 		
-
-
-
-
-		return 0;
+		return miniDist(_queryWord, rhs);
+		
 	}
 
 	void response(){
+#if 0	
+		for(size_t i = 0; i <= 8; ++ i){
+			cout << _resultQue.top()._word << endl;
+			_resultQue.pop();
+		}
+#endif
+		cout << _resultQue.size() << endl;
 		string res ;
 		for(int i = 0;i != 5;++ i){
 			res += _resultQue.top()._word;
 			res += "\n";
 			_resultQue.pop();
 		}
-
 		_conn->sendInLoop(res);
 	}
 
@@ -122,6 +165,7 @@ private:
 	std::string _queryWord;
 	TcpConnectionPtr _conn;
 	priority_queue<MyResult, vector<MyResult>, MyCompare> _resultQue;
+	bitset<50000> _isUsed;
 };
 
 }//end of namespace wd
