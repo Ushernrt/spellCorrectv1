@@ -33,11 +33,17 @@ public:
 	}
 
 	map<string, string> & getConfigMap(){
+		
+		return _configMap;
+	}
+
+private:
+	void init(){
 		unique_ptr<ifstream> ifs(new ifstream(_filepath.c_str()));
 //		ifstream ifs(_filepath.c_str());
 		if(!ifs->good()){
 			cout << "ifstream open error!" << endl;
-			return	_configMap; 
+			return; 
 		}
 
 		string line;
@@ -50,8 +56,7 @@ public:
 
 			_configMap[key] = value;
 		}
-		
-		return _configMap;
+
 	}
 
 private:
