@@ -13,8 +13,14 @@ using std::endl;
 
 
 
-int main(){
-	wd::Configuration config("/home/xiu/spellCorrectv2/conf/config")	;
+int main(int argc, char *argv[]){
+	
+	if(argc!=2){
+		puts("./server.ext ../conf/config\n");
+		return -1;
+	}
+
+	wd::Configuration config(argv[1]);
 
 	wd::SpellcorrectServer server(config);
 

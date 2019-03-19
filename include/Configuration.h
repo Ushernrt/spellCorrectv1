@@ -29,7 +29,7 @@ public:
 	Configuration(const string & filepath)
 	: _filepath(filepath)
 	{
-		
+		init();
 	}
 
 	map<string, string> & getConfigMap(){
@@ -43,6 +43,7 @@ private:
 //		ifstream ifs(_filepath.c_str());
 		if(!ifs->good()){
 			cout << "ifstream open error!" << endl;
+			cout << _filepath << endl;
 			return; 
 		}
 
@@ -52,8 +53,9 @@ private:
 		while(getline(*ifs, line)){
 			istringstream iss(line);
 			iss >> key;
+			cout << key << ":";
 			iss >> value;
-
+			cout << value << endl;
 			_configMap[key] = value;
 		}
 

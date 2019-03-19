@@ -52,12 +52,14 @@ public:
 	
 		unique_ptr<ifstream> ifsDict(new ifstream(dictPath));
 		if(!ifsDict->good()){
-			cout << "ifstream error" << endl;
+			cout << "ifstream error dictpath" << endl;
+			cout << dictPath << endl;
 			return;
 		}
 		unique_ptr<ifstream> ifsIndex(new ifstream(indexPath));
 		if(!ifsIndex->good()){
-			cout << "ifstream error" << endl;
+			cout << "ifstream error indexpath" << endl;
+			cout << indexPath << endl;
 			return ;
 		}
 		string line;
